@@ -1,0 +1,73 @@
+pipeline {
+    agent { label 'Node' }
+
+    parameters {
+        string(name: 'FRONTEND_DOCKER_TAG', defaultValue: '', description: 'Frontend Docker tag of the image built by the CI job')
+        string(name: 'BACKEND_DOCKER_TAG', defaultValue: '', description: 'Backend Docker tag of the image built by the CI job')
+    }
+
+    stages {
+        stage("Workspace cleanup") {
+            steps {
+                cleanWs()
+            }
+        }
+
+        stage('Git: Code Checkout') {
+            steps {
+                git url: 'https://github.com/richardnguyendev/Wanderlust-Mega-DevOps.git', branch: 'main'
+            }
+        }
+
+        stage('Verify: Docker Image Tags') {
+            steps {
+                echo "FRONTEND_DOCKER_TAG: ${params.FRONTEND_DOCKER_TAG}"
+                echo "BACKEND_DOCKER_TAG: ${params.BACKEND_DOCKER_TAG}"
+            }
+        }
+
+        stage("Update: Kubernetes manifests") {
+            steps {
+                dir('kubernetes') {
+                    sh "sed -i 's|wanderlust-backend-beta:.*|wanderlust-backend-beta:${params.BACKEND_DOCKER_TAG}|' backend.yaml"
+                    sh "sed -i 's|wanderlust-frontend-beta:.*|wanderlust-frontend-beta:${params.FRONTEND_DOCKER_TAG}|' frontend.yaml"
+                }
+            }
+        }
+
+        stage("Git: Commit & Push Changes") {
+            steps {
+                sh """
+                    git config --global user.email "your_email@example.com"
+                    git config --global user.name "Your Name"
+                    git add .
+                    git commit -m "Updated Kubernetes manifests with new Docker tags" || echo "No changes to commit"
+                    git push https://github.com/richardnguyendev/Wanderlust-Mega-DevOps.git main
+                """
+            }
+        }
+    }
+
+    post {
+        always {
+            script {
+                emailext(
+                    attachLog: true,
+                    subject: "Wanderlust Updated and Deployed - '${currentBuild.result}'",
+                    body: """
+                        <html>
+                        <body>
+                            <p><strong>Project:</strong> ${env.JOB_NAME}</p>
+                            <p><strong>Build #:</strong> ${env.BUILD_NUMBER}</p>
+                            <p><strong>URL:</strong> ${env.BUILD_URL}</p>
+                        </body>
+                        </html>
+                    """,
+                    to: 'your-email@example.com',
+                    mimeType: 'text/html'
+                )
+            }
+        }
+    }
+}
+
