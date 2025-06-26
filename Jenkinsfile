@@ -3,17 +3,17 @@
 // =============================
 def trivy_scan() {
     echo "🔍 Trivy scan running..."
-    sh "trivy fs ."
+    bat "trivy fs ."
 }
 
 def owasp_dependency() {
     echo "🔒 OWASP Dependency check running..."
-    sh "dependency-check.sh --project wanderlust --scan ."
+    bat "dependency-check.sh --project wanderlust --scan ."
 }
 
 def sonarqube_analysis(toolName, projectKey, projectName) {
     withSonarQubeEnv("${toolName}") {
-        sh """
+        bat """
             sonar-scanner \
             -Dsonar.projectKey=${projectKey} \
             -Dsonar.projectName=${projectName} \
@@ -30,12 +30,12 @@ def sonarqube_code_quality() {
 
 def docker_build(imageName, tag, dockerUser) {
     echo "🐳 Docker build: ${dockerUser}/${imageName}:${tag}"
-    sh "docker build -t ${dockerUser}/${imageName}:${tag} ."
+    bat "docker build -t ${dockerUser}/${imageName}:${tag} ."
 }
 
 def docker_push(imageName, tag, dockerUser) {
-    echo "📤 Docker push: ${dockerUser}/${imageName}:${tag}"
-    sh "docker push ${dockerUser}/${imageName}:${tag}"
+    echo "📤 Docker pubat: ${dockerUser}/${imageName}:${tag}"
+    bat "docker push ${dockerUser}/${imageName}:${tag}"
 }
 
 // =============================
@@ -103,7 +103,7 @@ pipeline {
                 stage("Backend env setup") {
                     steps {
                         dir("Automations") {
-                            sh "bash updatebackendnew.sh"
+                            bat "bash updatebackendnew.sh"
                         }
                     }
                 }
@@ -111,7 +111,7 @@ pipeline {
                 stage("Frontend env setup") {
                     steps {
                         dir("Automations") {
-                            sh "bash updatefrontendnew.sh"
+                            bat "bash updatefrontendnew.sh"
                         }
                     }
                 }
