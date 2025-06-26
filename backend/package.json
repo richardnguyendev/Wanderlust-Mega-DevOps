@@ -15,7 +15,6 @@
   },
   "scripts": {
     "test": "jest --watchAll  --detectOpenHandles --verbose --coverage ",
-    // "start": "nodemon server.js",
     "dev": "nodemon server.js",
     "start": "node server.js",
     "check": "prettier --check .",
