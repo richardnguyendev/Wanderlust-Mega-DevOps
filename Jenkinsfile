@@ -8,7 +8,7 @@ def trivy_scan() {
 
 def owasp_dependency() {
     echo "🔒 OWASP Dependency check running..."
-    bat "dependency-check.sh --project wanderlust --scan ."
+    bat "dependency-check.bat --project wanderlust --scan ."
 }
 
 def sonarqube_analysis(toolName, projectKey, projectName) {
