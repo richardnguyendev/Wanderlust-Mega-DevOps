@@ -77,10 +77,15 @@ pipeline {
         stage("OWASP: Dependency Check") {
             steps {
                 script {
-                    owasp_dependency()
+                    // Kéo image chính thức rồi chạy dependency-check.sh bên trong container
+                    docker.image('owasp/dependency-check:latest').inside("--entrypoint='' -v \"${env.WORKSPACE}:/src\"") {
+                        // Dùng sh vì container là Linux
+                        sh 'dependency-check.sh --project wanderlust --scan /src'
+                    }
                 }
             }
         }
+
 
         stage("SonarQube: Code Analysis") {
             steps {
