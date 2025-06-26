@@ -1,5 +1,11 @@
 {
-  "rewrites": [{ "source": "/(.*)", "destination": "/" }],
+  // "rewrites": [{ "source": "/(.*)", "destination": "/" }]
+  "rewrites": [
+    {
+      "source": "/api/:path*",
+      "destination": "https://wanderlust-backend.onrender.com/api/:path*"
+    }
+  ],
   "headers": [
     {
       "source": "/api/(.*)",
