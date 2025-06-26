@@ -1,5 +1,5 @@
 pipeline {
-    agent any   
+    agent { label 'Node' }
 
     parameters {
         string(name: 'FRONTEND_DOCKER_TAG', defaultValue: '', description: 'Frontend Docker tag of the image built by the CI job')
