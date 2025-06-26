@@ -13,7 +13,11 @@ const port = process.env.PORT || 5000;
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-app.use(cors());
+// app.use(cors());
+app.use(cors({
+  origin: 'https://wanderlust-mega-dev-ops.vercel.app', 
+  credentials: true, // nếu dùng cookie
+}));
 app.use(cookieParser());
 app.use(compression());
 
@@ -24,11 +28,11 @@ connectDB();
 // connectToRedis();
 
 // API route
-// app.use('/api/posts', postsRouter);
-app.use('/api/posts', (req, res, next) => {
-  console.log(`[LOG] /api/posts called: ${req.method} ${req.originalUrl}`);
-  next();
-}, postsRouter); // <- Bổ sung router
+app.use('/api/posts', postsRouter);
+// app.use('/api/posts', (req, res, next) => {
+//   console.log(`[LOG] /api/posts called: ${req.method} ${req.originalUrl}`);
+//   next();
+// }, postsRouter); // <- Bổ sung router
 
 app.use('/api/auth', authRouter);
 
