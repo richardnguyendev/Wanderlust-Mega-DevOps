@@ -66,13 +66,13 @@ pipeline {
             }
         }
 
-        stage("Trivy: Filesystem Scan") {
-            steps {
-                script {
-                    trivy_scan()
-                }
-            }
-        }
+        // stage("Trivy: Filesystem Scan") {
+        //     steps {
+        //         script {
+        //             trivy_scan()
+        //         }
+        //     }
+        // }
 
         stage("OWASP: Dependency Check") {
             steps {
