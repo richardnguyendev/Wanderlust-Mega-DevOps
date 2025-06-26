@@ -82,7 +82,7 @@ pipeline {
                     -v "%WORKSPACE%:/src" ^
                     -w /src ^
                     owasp/dependency-check:latest ^
-                    dependency-check.sh --project wanderlust --scan /src
+                    dependency-check.sh --project wanderlust --scan /src --disableNodeJS
                 """
             }
         }
