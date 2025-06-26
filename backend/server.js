@@ -28,7 +28,8 @@ connectDB();
 app.use('/api/posts', (req, res, next) => {
   console.log(`[LOG] /api/posts called: ${req.method} ${req.originalUrl}`);
   next();
-});
+}, postsRouter); // <- Bổ sung router
+
 app.use('/api/auth', authRouter);
 
 app.get('/', (req, res) => {
