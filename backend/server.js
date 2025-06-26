@@ -24,7 +24,11 @@ connectDB();
 // connectToRedis();
 
 // API route
-app.use('/api/posts', postsRouter);
+// app.use('/api/posts', postsRouter);
+app.use('/api/posts', (req, res, next) => {
+  console.log(`[LOG] /api/posts called: ${req.method} ${req.originalUrl}`);
+  next();
+});
 app.use('/api/auth', authRouter);
 
 app.get('/', (req, res) => {
