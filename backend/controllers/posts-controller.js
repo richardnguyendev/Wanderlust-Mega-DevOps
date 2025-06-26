@@ -15,6 +15,7 @@ export const createPostHandler = async (req, res) => {
       description,
       isFeaturedPost = false,
     } = req.body;
+    console.log()
 
     // Validation - check if all fields are filled
     if (!title || !authorName || !imageLink || !description || !categories) {
