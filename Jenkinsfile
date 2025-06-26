@@ -1,3 +1,46 @@
+// =============================
+// ✅ HÀM DÙNG CHUNG (Đặt TRƯỚC pipeline)
+// =============================
+def trivy_scan() {
+    echo "🔍 Trivy scan running..."
+    sh "trivy fs ."
+}
+
+def owasp_dependency() {
+    echo "🔒 OWASP Dependency check running..."
+    sh "dependency-check.sh --project wanderlust --scan ."
+}
+
+def sonarqube_analysis(toolName, projectKey, projectName) {
+    withSonarQubeEnv("${toolName}") {
+        sh """
+            sonar-scanner \
+            -Dsonar.projectKey=${projectKey} \
+            -Dsonar.projectName=${projectName} \
+            -Dsonar.sources=.
+        """
+    }
+}
+
+def sonarqube_code_quality() {
+    timeout(time: 2, unit: 'MINUTES') {
+        waitForQualityGate abortPipeline: true
+    }
+}
+
+def docker_build(imageName, tag, dockerUser) {
+    echo "🐳 Docker build: ${dockerUser}/${imageName}:${tag}"
+    sh "docker build -t ${dockerUser}/${imageName}:${tag} ."
+}
+
+def docker_push(imageName, tag, dockerUser) {
+    echo "📤 Docker push: ${dockerUser}/${imageName}:${tag}"
+    sh "docker push ${dockerUser}/${imageName}:${tag}"
+}
+
+// =============================
+// ✅ PIPELINE CHÍNH
+// =============================
 pipeline {
     agent { label 'Node' }
 
@@ -104,7 +147,6 @@ pipeline {
         success {
             archiveArtifacts artifacts: '*.xml', followSymlinks: false
 
-           
             build job: "Wanderlust-CD", parameters: [
                 string(name: 'FRONTEND_DOCKER_TAG', value: "${params.FRONTEND_DOCKER_TAG}"),
                 string(name: 'BACKEND_DOCKER_TAG', value: "${params.BACKEND_DOCKER_TAG}")
@@ -112,4 +154,3 @@ pipeline {
         }
     }
 }
-
