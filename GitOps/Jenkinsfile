@@ -12,26 +12,12 @@ pipeline {
     }
 
     stages {
-<<<<<<< HEAD
-        stage("Workspace cleanup") {
-=======
-
         stage("Workspace Cleanup") {
->>>>>>> ed80b38 (Update scripts and env files for Jenkins pipeline)
             steps {
                 cleanWs()
             }
         }
 
-<<<<<<< HEAD
-        stage('Git: Code Checkout') {
-            steps {
-                git url: 'https://github.com/richardnguyendev/Wanderlust-Mega-DevOps.git', branch: 'main'
-            }
-        }
-
-        stage('Verify: Docker Image Tags') {
-=======
         stage("Git: Clone Code") {
             steps {
                 git branch: "${env.GIT_BRANCH}", url: "${env.GIT_REPO}"
@@ -39,113 +25,71 @@ pipeline {
         }
 
         stage("Verify: Docker Image Tags") {
->>>>>>> ed80b38 (Update scripts and env files for Jenkins pipeline)
             steps {
                 echo "FRONTEND_DOCKER_TAG: ${params.FRONTEND_DOCKER_TAG}"
                 echo "BACKEND_DOCKER_TAG: ${params.BACKEND_DOCKER_TAG}"
             }
         }
 
-<<<<<<< HEAD
-        stage("Update: Kubernetes manifests") {
-            steps {
-                dir('kubernetes') {
-                    sh "sed -i 's|wanderlust-backend-beta:.*|wanderlust-backend-beta:${params.BACKEND_DOCKER_TAG}|' backend.yaml"
-                    sh "sed -i 's|wanderlust-frontend-beta:.*|wanderlust-frontend-beta:${params.FRONTEND_DOCKER_TAG}|' frontend.yaml"
-=======
         stage("Update Kubernetes manifests") {
             steps {
-                script {
-                    dir('kubernetes') {
-                        sh """
-                            sed -i -E 's|(wanderlust-backend-beta:).*|\\1${params.BACKEND_DOCKER_TAG}|' backend.yaml
-                            sed -i -E 's|(wanderlust-frontend-beta:).*|\\1${params.FRONTEND_DOCKER_TAG}|' frontend.yaml
-                        """
-                    }
->>>>>>> ed80b38 (Update scripts and env files for Jenkins pipeline)
+                dir('kubernetes') {
+                    sh """
+                        sed -i -E 's|(wanderlust-backend-beta:).*|\\1${params.BACKEND_DOCKER_TAG}|' backend.yaml
+                        sed -i -E 's|(wanderlust-frontend-beta:).*|\\1${params.FRONTEND_DOCKER_TAG}|' frontend.yaml
+                    """
                 }
             }
         }
 
-<<<<<<< HEAD
-        stage("Git: Commit & Push Changes") {
-            steps {
-                sh """
-                    git config --global user.email "your_email@example.com"
-                    git config --global user.name "Your Name"
-                    git add .
-                    git commit -m "Updated Kubernetes manifests with new Docker tags" || echo "No changes to commit"
-                    git push https://github.com/richardnguyendev/Wanderlust-Mega-DevOps.git main
-                """
-=======
         stage("Git: Commit & Push Updated YAMLs") {
             steps {
                 withCredentials([usernamePassword(credentialsId: 'github-credentials', usernameVariable: 'GIT_USER', passwordVariable: 'GIT_PASS')]) {
                     sh """
                         git config user.email "vinh.thanhdemon@gmail.com"
                         git config user.name "Richard CI"
-                        git status
                         git add .
                         if git diff --cached --quiet; then
-                        echo "No changes to commit"
+                            echo "No changes to commit"
                         else
-                        git commit -m "Updated Kubernetes manifests with new docker tags"
+                            git commit -m "Updated Kubernetes manifests with new docker tags"
+                            git push https://${GIT_USER}:${GIT_PASS}@github.com/richardnguyendev/Wanderlust-Mega-DevOps.git ${env.GIT_BRANCH}
                         fi
-                        git push https://${GIT_USER}:${GIT_PASS}@github.com/richardnguyendev/Wanderlust-Mega-DevOps.git ${env.GIT_BRANCH}
                     """
                 }
->>>>>>> ed80b38 (Update scripts and env files for Jenkins pipeline)
             }
         }
     }
 
     post {
         always {
-            script {
-                emailext(
-                    attachLog: true,
-<<<<<<< HEAD
-                    subject: "Wanderlust Updated and Deployed - '${currentBuild.result}'",
-                    body: """
-                        <html>
-                        <body>
-                            <p><strong>Project:</strong> ${env.JOB_NAME}</p>
-                            <p><strong>Build #:</strong> ${env.BUILD_NUMBER}</p>
-                            <p><strong>URL:</strong> ${env.BUILD_URL}</p>
-                        </body>
-                        </html>
-                    """,
-                    to: 'your-email@example.com',
-                    mimeType: 'text/html'
-=======
-                    subject: "Wanderlust App Updated - ${currentBuild.result}",
-                    from: 'vinh.thanhdemon@gmail.com',
-                    to: 'vinh.thanhdemon@gmail.com',
-                    mimeType: 'text/html',
-                    body: """s
-                    <html>
-                        <body>
-                            <div style="background-color:#FFA07A;padding:10px;">
-                                <strong>Project:</strong> ${env.JOB_NAME}
-                            </div>
-                            <div style="background-color:#90EE90;padding:10px;">
-                                <strong>Build Number:</strong> ${env.BUILD_NUMBER}
-                            </div>
-                            <div style="background-color:#87CEEB;padding:10px;">
-                                <strong>Build URL:</strong> <a href="${env.BUILD_URL}">${env.BUILD_URL}</a>
-                            </div>
-                        </body>
-                    </html>
-                    """
->>>>>>> ed80b38 (Update scripts and env files for Jenkins pipeline)
-                )
-            }
+            emailext(
+                attachLog: true,
+                subject: "Wanderlust Updated - ${currentBuild.result}",
+                from: 'vinh.thanhdemon@gmail.com',
+                to: 'vinh.thanhdemon@gmail.com',
+                mimeType: 'text/html',
+                body: """
+                <html>
+                    <body>
+                        <div style="background-color:#FFA07A;padding:10px;">
+                            <strong>Project:</strong> ${env.JOB_NAME}
+                        </div>
+                        <div style="background-color:#90EE90;padding:10px;">
+                            <strong>Build Number:</strong> ${env.BUILD_NUMBER}
+                        </div>
+                        <div style="background-color:#87CEEB;padding:10px;">
+                            <strong>Build URL:</strong> <a href="${env.BUILD_URL}">${env.BUILD_URL}</a>
+                        </div>
+                    </body>
+                </html>
+                """
+            )
         }
     }
 }
 
-<<<<<<< HEAD
-=======
+
 
 // @Library('Shared') _
 // pipeline {

@@ -1,20 +1,22 @@
-<<<<<<< HEAD
 // =============================
-// ✅ HÀM DÙNG CHUNG (Đặt TRƯỚC pipeline)
+// ✅ HÀM DÙNG CHUNG
 // =============================
 def trivy_scan() {
     echo "🔍 Trivy scan running..."
-    bat "trivy fs ."
+    sh 'trivy fs . || true'
 }
 
 def owasp_dependency() {
     echo "🔒 OWASP Dependency check running..."
-    bat "dependency-check.bat --project wanderlust --scan ."
+    sh '''
+        mkdir -p owasp-output
+        dependency-check.sh --scan . --format XML --out owasp-output
+    '''
 }
 
 def sonarqube_analysis(toolName, projectKey, projectName) {
     withSonarQubeEnv("${toolName}") {
-        bat """
+        sh """
             sonar-scanner \
             -Dsonar.projectKey=${projectKey} \
             -Dsonar.projectName=${projectName} \
@@ -31,28 +33,22 @@ def sonarqube_code_quality() {
 
 def docker_build(imageName, tag, dockerUser) {
     echo "🐳 Docker build: ${dockerUser}/${imageName}:${tag}"
-    bat "docker build -t ${dockerUser}/${imageName}:${tag} ."
+    sh "docker build -t ${dockerUser}/${imageName}:${tag} ."
 }
 
 def docker_push(imageName, tag, dockerUser) {
-    echo "📤 Docker pubat: ${dockerUser}/${imageName}:${tag}"
-    bat "docker push ${dockerUser}/${imageName}:${tag}"
+    echo "📤 Docker push: ${dockerUser}/${imageName}:${tag}"
+    sh "docker push ${dockerUser}/${imageName}:${tag}"
 }
 
 // =============================
 // ✅ PIPELINE CHÍNH
 // =============================
-=======
->>>>>>> ed80b38 (Update scripts and env files for Jenkins pipeline)
 pipeline {
     agent { label 'Node' }
 
     environment {
-<<<<<<< HEAD
-        SONAR_HOME = tool "Sonar"
-=======
         SONAR_HOME = tool 'Sonar'
->>>>>>> ed80b38 (Update scripts and env files for Jenkins pipeline)
     }
 
     parameters {
@@ -61,130 +57,63 @@ pipeline {
     }
 
     stages {
-<<<<<<< HEAD
         stage("Workspace Cleanup") {
             steps {
                 cleanWs()
             }
         }
 
-        stage("Git: Code Checkout") {
-            steps {
-                git url: 'https://github.com/richardnguyendev/Wanderlust-Mega-DevOps.git', branch: 'main'
-            }
-        }
-
-        // stage("Trivy: Filesystem Scan") {
-        //     steps {
-        //         script {
-        //             trivy_scan()
-        //         }
-        //     }
-        // }
-
-        stage("OWASP: Dependency Check") {
-            steps {
-                bat """
-                echo 🔒 Running OWASP Dependency-Check in Docker...
-                docker run --rm ^
-                    -v "%WORKSPACE%:/src" ^
-                    -w /src ^
-                    owasp/dependency-check:latest ^
-                    dependency-check.sh --project wanderlust --scan /src --disableNodeJS
-                """
-            }
-        }
-
-
-
-        stage("SonarQube: Code Analysis") {
-            steps {
-                script {
-                    sonarqube_analysis("Sonar", "wanderlust", "wanderlust")
-=======
-
-        stage("Workspace cleanup") {
-            steps {
-                cleanWs()
-            }
-        }
-
-        stage("Git: Code Checkout") {
+        stage("Git: Checkout Code") {
             steps {
                 git branch: 'main', url: 'https://github.com/richardnguyendev/Wanderlust-Mega-DevOps.git'
             }
         }
 
-        stage("Trivy: Filesystem scan") {
+        stage("Trivy: Filesystem Scan") {
             steps {
-                sh 'trivy fs . || true'
+                script {
+                    trivy_scan()
+                }
             }
         }
 
-        stage("OWASP: Dependency check") {
+        stage("OWASP: Dependency Check") {
             steps {
-                sh '''
-                    mkdir -p owasp-output
-                    dependency-check.sh --scan . --format XML --out owasp-output
-                '''
+                script {
+                    owasp_dependency()
+                }
             }
         }
 
         stage("SonarQube: Code Analysis") {
             steps {
-                withSonarQubeEnv("Sonar") {
-                    sh '''
-                        sonar-scanner \
-                        -Dsonar.projectKey=wanderlust \
-                        -Dsonar.projectName=wanderlust \
-                        -Dsonar.sources=.
-                    '''
->>>>>>> ed80b38 (Update scripts and env files for Jenkins pipeline)
+                script {
+                    sonarqube_analysis("Sonar", "wanderlust", "wanderlust")
                 }
             }
         }
 
-<<<<<<< HEAD
-        stage("SonarQube: Quality Gates") {
+        stage("SonarQube: Quality Gate") {
             steps {
                 script {
                     sonarqube_code_quality()
-=======
-        stage("SonarQube: Code Quality Gates") {
-            steps {
-                timeout(time: 2, unit: 'MINUTES') {
-                    waitForQualityGate abortPipeline: true
->>>>>>> ed80b38 (Update scripts and env files for Jenkins pipeline)
                 }
             }
         }
 
-<<<<<<< HEAD
-        stage("Export Environment Variables") {
-=======
-        stage("Exporting environment variables") {
->>>>>>> ed80b38 (Update scripts and env files for Jenkins pipeline)
+        stage("Exporting Environment Variables") {
             parallel {
                 stage("Backend env setup") {
                     steps {
                         dir("Automations") {
-<<<<<<< HEAD
-                            bat "bash updatebackendnew.sh"
-=======
                             sh "bash updatebackendnew.sh"
->>>>>>> ed80b38 (Update scripts and env files for Jenkins pipeline)
                         }
                     }
                 }
-
                 stage("Frontend env setup") {
                     steps {
                         dir("Automations") {
-<<<<<<< HEAD
-                            bat "bash updatefrontendnew.sh"
-=======
                             sh "bash updatefrontendnew.sh"
->>>>>>> ed80b38 (Update scripts and env files for Jenkins pipeline)
                         }
                     }
                 }
@@ -193,23 +122,12 @@ pipeline {
 
         stage("Docker: Build Images") {
             steps {
-<<<<<<< HEAD
-                dir('backend') {
-                    script {
-                        docker_build("wanderlust-backend-beta", "${params.BACKEND_DOCKER_TAG}", "madhupdevops")
-                    }
-                }
-                dir('frontend') {
-                    script {
-                        docker_build("wanderlust-frontend-beta", "${params.FRONTEND_DOCKER_TAG}", "madhupdevops")
-=======
                 script {
                     dir('backend') {
-                        sh "docker build -t richarddevops/wanderlust-backend-beta:${params.BACKEND_DOCKER_TAG} ."
+                        docker_build("wanderlust-backend-beta", "${params.BACKEND_DOCKER_TAG}", "richarddevops")
                     }
                     dir('frontend') {
-                        sh "docker build -t richarddevops/wanderlust-frontend-beta:${params.FRONTEND_DOCKER_TAG} ."
->>>>>>> ed80b38 (Update scripts and env files for Jenkins pipeline)
+                        docker_build("wanderlust-frontend-beta", "${params.FRONTEND_DOCKER_TAG}", "richarddevops")
                     }
                 }
             }
@@ -217,18 +135,12 @@ pipeline {
 
         stage("Docker: Push to DockerHub") {
             steps {
-<<<<<<< HEAD
-                script {
-                    docker_push("wanderlust-backend-beta", "${params.BACKEND_DOCKER_TAG}", "madhupdevops")
-                    docker_push("wanderlust-frontend-beta", "${params.FRONTEND_DOCKER_TAG}", "madhupdevops")
-=======
                 withCredentials([usernamePassword(credentialsId: 'dockerhub', usernameVariable: 'USER', passwordVariable: 'PASS')]) {
                     sh '''
                         echo "$PASS" | docker login -u "$USER" --password-stdin
                         docker push richarddevops/wanderlust-backend-beta:${BACKEND_DOCKER_TAG}
                         docker push richarddevops/wanderlust-frontend-beta:${FRONTEND_DOCKER_TAG}
                     '''
->>>>>>> ed80b38 (Update scripts and env files for Jenkins pipeline)
                 }
             }
         }
@@ -245,6 +157,7 @@ pipeline {
         }
     }
 }
+
 
 
 // @Library('Shared') _
