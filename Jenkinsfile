@@ -9,8 +9,18 @@ def trivy_scan() {
 def owasp_dependency() {
     echo "🔒 OWASP Dependency check running..."
     sh '''
+        docker volume create dependency-data || true
         mkdir -p owasp-output
-        dependency-check.sh --scan . --format XML --out owasp-output
+        docker run --rm \
+            -v dependency-data:/usr/share/dependency-check/data \
+            -v $PWD:$PWD \
+            -w $PWD \
+            owasp/dependency-check \
+            --scan . \
+            --format XML \
+            --out owasp-output \
+            --nvdApiKey 2d64934e-4e2c-4739-976b-41fb10d022f2 \
+            --log owasp-output/debug.log
     '''
 }
 
@@ -69,6 +79,19 @@ pipeline {
             }
         }
 
+        stage("Install Dependencies") {
+            steps {
+                script {
+                    dir('frontend') {
+                        sh 'npm install'
+                    }
+                    dir('backend') {
+                        sh 'npm install'
+                    }
+                }
+            }
+        }
+
         stage("Trivy: Filesystem Scan") {
             steps {
                 script {
@@ -79,20 +102,9 @@ pipeline {
 
         stage("OWASP: Dependency Check") {
             steps {
-                sh '''
-                    docker volume create dependency-data || true
-                    mkdir -p owasp-output
-                    docker run --rm \
-                    -v dependency-data:/usr/share/dependency-check/data \
-                    -v $PWD:$PWD \
-                    -w $PWD \
-                    owasp/dependency-check \
-                    --scan . \
-                    --format XML \
-                    --out owasp-output \
-                    --nvdApiKey 2d64934e-4e2c-4739-976b-41fb10d022f2
-                    --log owasp-output/debug.log
-                '''
+                script {
+                    owasp_dependency()
+                }
             }
         }
 
@@ -159,7 +171,7 @@ pipeline {
 
     post {
         success {
-            archiveArtifacts artifacts: '*.xml', followSymlinks: false
+            archiveArtifacts artifacts: 'owasp-output/*.xml', followSymlinks: false
 
             build job: "Wanderlust-CD", parameters: [
                 string(name: 'FRONTEND_DOCKER_TAG', value: "${params.FRONTEND_DOCKER_TAG}"),
@@ -168,6 +180,7 @@ pipeline {
         }
     }
 }
+
 
 
 
