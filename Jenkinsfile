@@ -81,7 +81,7 @@ pipeline {
             steps {
                 sh '''
                     mkdir -p owasp-output
-                    ~/dependency-check/bin/dependency-check.sh --scan . --format XML --out owasp-output
+                    dependency-check --scan . --format XML --out owasp-output
                 '''
             }
         }
