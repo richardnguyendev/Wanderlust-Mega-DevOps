@@ -79,9 +79,10 @@ pipeline {
 
         stage("OWASP: Dependency Check") {
             steps {
-                script {
-                    owasp_dependency()
-                }
+                sh '''
+                    mkdir -p owasp-output
+                    ~/dependency-check/bin/dependency-check.sh --scan . --format XML --out owasp-output
+                '''
             }
         }
 
