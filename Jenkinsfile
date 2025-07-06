@@ -83,6 +83,8 @@ pipeline {
                     mkdir -p owasp-output
                     docker run --rm -v $PWD:$PWD -w $PWD owasp/dependency-check \
                     --scan . --format XML --out owasp-output
+                    --nvdApiKey 2d64934e-4e2c-4739-976b-41fb10d022f2
+
                 '''
             }
         }
