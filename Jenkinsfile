@@ -80,6 +80,7 @@ pipeline {
         stage("OWASP: Dependency Check") {
             steps {
                 sh '''
+                    docker volume create dependency-data || true
                     mkdir -p owasp-output
                     docker run --rm -v $PWD:$PWD -w $PWD owasp/dependency-check \
                     --scan . --format XML --out owasp-output
