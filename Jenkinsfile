@@ -77,19 +77,12 @@ pipeline {
             }
         }
 
-       stage("Setup Dependency-Check") {
-            steps {
-                sh '''
-                    wget https://github.com/jeremylong/DependencyCheck/releases/download/v8.4.1/dependency-check-8.4.0-release.zip
-                    unzip -o dependency-check-8.4.0-release.zip -d /tmp/
-                '''
-            }
-        }
         stage("OWASP: Dependency Check") {
             steps {
                 sh '''
                     mkdir -p owasp-output
-                    /tmp/dependency-check/bin/dependency-check.sh --scan . --format XML --out owasp-output
+                    docker run --rm -v $PWD:$PWD -w $PWD owasp/dependency-check \
+                    --scan . --format XML --out owasp-output
                 '''
             }
         }
