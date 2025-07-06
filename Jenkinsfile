@@ -80,8 +80,8 @@ pipeline {
        stage("Setup Dependency-Check") {
             steps {
                 sh '''
-                    wget https://github.com/jeremylong/DependencyCheck/releases/download/v8.4.1/dependency-check-8.4.1-release.zip
-                    unzip -o dependency-check-8.4.1-release.zip -d /tmp/
+                    wget https://github.com/jeremylong/DependencyCheck/releases/download/v8.4.1/dependency-check-8.4.0-release.zip
+                    unzip -o dependency-check-8.4.0-release.zip -d /tmp/
                 '''
             }
         }
