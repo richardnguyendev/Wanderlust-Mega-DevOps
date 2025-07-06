@@ -11,6 +11,7 @@ def owasp_dependency() {
     sh '''
         docker volume create dependency-data || true
         mkdir -p owasp-output
+
         docker run --rm \
             --user $(id -u):$(id -g) \
             -v dependency-data:/usr/share/dependency-check/data \
@@ -18,6 +19,11 @@ def owasp_dependency() {
             -w $PWD \
             owasp/dependency-check \
             --scan . \
+            --exclude node_modules \
+            --exclude .git \
+            --exclude dist \
+            --exclude build \
+            --file-filter "**/*.js,**/*.json" \
             --format XML \
             --out owasp-output \
             --nvdApiKey 2d64934e-4e2c-4739-976b-41fb10d022f2 \
