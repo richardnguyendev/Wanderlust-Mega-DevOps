@@ -9,7 +9,8 @@ def trivy_scan() {
 def owasp_dependency() {
     echo "🔒 OWASP Dependency check running..."
     sh '''
-        docker volume create dependency-data || true
+        docker volume rm dependency-data || true
+        docker volume create dependency-data
         mkdir -p owasp-output
 
         docker run --rm \
