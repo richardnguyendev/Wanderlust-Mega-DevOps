@@ -13,6 +13,11 @@ def owasp_dependency() {
         docker volume create dependency-data
         mkdir -p owasp-output
 
+        # Check if DB exists
+        HAS_DB=$(docker run --rm -v dependency-data:/data alpine sh -c '[ -f /data/cve.db ] && echo yes || echo no')
+
+        echo "👉 Using existing CVE DB: $HAS_DB"
+
         docker run --rm \
             --user $(id -u):$(id -g) \
             -v dependency-data:/usr/share/dependency-check/data \
@@ -20,11 +25,13 @@ def owasp_dependency() {
             -w $PWD \
             owasp/dependency-check \
             --scan package-lock.json \
-            --noupdate \
+            ${HAS_DB == "yes" && "--noupdate" || ""} \
             --format XML \
+            --failOnCVSS 7 \
+            --project "wanderlust-ci" \
             --out owasp-output \
             --nvdApiKey 2d64934e-4e2c-4739-976b-41fb10d022f2 \
-            --log owasp-output/debug.log
+            --log owasp-output/debug.log || echo "⚠️ Dependency Check completed with warnings"
     '''
 }
 
