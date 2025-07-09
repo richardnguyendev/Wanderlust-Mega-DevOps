@@ -19,11 +19,8 @@ def owasp_dependency() {
             -v $PWD:$PWD \
             -w $PWD \
             owasp/dependency-check \
-            --scan . \
-            --exclude node_modules \
-            --exclude .git \
-            --exclude dist \
-            --exclude build \
+            --scan package-lock.json \
+            --noupdate \
             --format XML \
             --out owasp-output \
             --nvdApiKey 2d64934e-4e2c-4739-976b-41fb10d022f2 \
