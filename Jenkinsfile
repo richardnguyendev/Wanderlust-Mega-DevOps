@@ -24,7 +24,6 @@ def owasp_dependency() {
             --exclude .git \
             --exclude dist \
             --exclude build \
-            --file-filter "**/*.js,**/*.json" \
             --format XML \
             --out owasp-output \
             --nvdApiKey 2d64934e-4e2c-4739-976b-41fb10d022f2 \
