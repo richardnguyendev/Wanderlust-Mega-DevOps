@@ -34,6 +34,7 @@ def sonarqube_analysis(toolName, projectKey, projectName) {
             ${scannerHome}/bin/sonar-scanner \
             -Dsonar.projectKey=${projectKey} \
             -Dsonar.projectName=${projectName} \
+            -Dsonar.qualitygate.wait=true \
             -Dsonar.sources=.
         """
     }
