@@ -67,4 +67,4 @@ fi
 #                 echo -e "${RED}ERROR : File not found..${NC}"
 #         fi
 # fi
->>>>>>> ed80b38 (Update scripts and env files for Jenkins pipeline)
+# >>>>>>> ed80b38 (Update scripts and env files for Jenkins pipeline)
