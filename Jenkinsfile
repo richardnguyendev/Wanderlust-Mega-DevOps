@@ -30,8 +30,9 @@ def owasp_dependency() {
 
 def sonarqube_analysis(toolName, projectKey, projectName) {
     withSonarQubeEnv("${toolName}") {
+        def scannerHome = tool name: "${toolName}", type: 'hudson.plugins.sonar.SonarRunnerInstallation'
         sh """
-            sonar-scanner \
+            ${scannerHome}/bin/sonar-scanner \
             -Dsonar.projectKey=${projectKey} \
             -Dsonar.projectName=${projectName} \
             -Dsonar.sources=.
