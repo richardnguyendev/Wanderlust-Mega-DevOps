@@ -40,7 +40,7 @@ def sonarqube_analysis(toolName, projectKey, projectName) {
 }
 
 def sonarqube_code_quality() {
-    timeout(time: 2, unit: 'MINUTES') {
+    timeout(time: 5, unit: 'MINUTES') {
         waitForQualityGate abortPipeline: true
     }
 }
