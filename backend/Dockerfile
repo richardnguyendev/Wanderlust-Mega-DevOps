@@ -13,6 +13,9 @@ RUN npm i
 # tests
 RUN npm run test
 
+# Fix quyền thực thi jest
+RUN chmod +x ./node_modules/.bin/jest
+
 # Stage 2
 FROM node:21-slim
 
