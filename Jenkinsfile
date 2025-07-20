@@ -152,10 +152,10 @@ pipeline {
             steps {
                 script {
                     dir('backend') {
-                        docker_build("wanderlust-backend-beta", "${params.BACKEND_DOCKER_TAG}", "richarddevops")
+                        docker_build("wanderlust-backend-beta", "${params.BACKEND_DOCKER_TAG}", "richarnguyen")
                     }
                     dir('frontend') {
-                        docker_build("wanderlust-frontend-beta", "${params.FRONTEND_DOCKER_TAG}", "richarddevops")
+                        docker_build("wanderlust-frontend-beta", "${params.FRONTEND_DOCKER_TAG}", "richarnguyen")
                     }
                 }
             }
