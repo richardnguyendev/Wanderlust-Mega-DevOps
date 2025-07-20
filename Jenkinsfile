@@ -7,25 +7,52 @@ def trivy_scan() {
 }
 
 def owasp_dependency() {
+    def projectDir = pwd()
+
     echo "🔒 OWASP Dependency check running..."
-    sh '''
+
+    sh """
         docker volume inspect dependency-data >/dev/null 2>&1 || docker volume create dependency-data
-        mkdir -p Wanderlust-Mega-Project/owasp-output
+        mkdir -p ${projectDir}/owasp-output
 
         docker run --rm \
             -v dependency-data:/usr/share/dependency-check/data \
-            -v $PWD:$PWD \
-            -w $PWD \
+            -v ${projectDir}:${projectDir} \
+            -w ${projectDir} \
             owasp/dependency-check \
             --scan package-lock.json \
             --format XML \
             --failOnCVSS 10 \
             --project "wanderlust-ci" \
             --out owasp-output \
-            --nvdApiKey 2d64934e-4e2c-4739-976b-41fb10d022f2 \
             --log owasp-output/debug.log || echo "⚠️ Dependency Check completed with warnings"
-    '''
+
+        sudo chown -R jenkins:jenkins ${projectDir}/owasp-output
+        ls -lh ${projectDir}/owasp-output
+    """
 }
+
+
+// def owasp_dependency() {
+//     echo "🔒 OWASP Dependency check running..."
+//     sh '''
+//         docker volume inspect dependency-data >/dev/null 2>&1 || docker volume create dependency-data
+//         mkdir -p owasp-output
+
+//         docker run --rm \
+//             -v dependency-data:/usr/share/dependency-check/data \
+//             -v $PWD:$PWD \
+//             -w $PWD \
+//             owasp/dependency-check \
+//             --scan package-lock.json \
+//             --format XML \
+//             --failOnCVSS 10 \
+//             --project "wanderlust-ci" \
+//             --out owasp-output \
+//             --nvdApiKey 2d64934e-4e2c-4739-976b-41fb10d022f2 \
+//             --log owasp-output/debug.log || echo "⚠️ Dependency Check completed with warnings"
+//     '''
+// }
 
 def sonarqube_analysis(toolName, projectKey, projectName) {
     withSonarQubeEnv("${toolName}") {
