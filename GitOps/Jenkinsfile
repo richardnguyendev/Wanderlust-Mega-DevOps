@@ -47,7 +47,7 @@ pipeline {
                 withCredentials([usernamePassword(credentialsId: 'github-credentials', usernameVariable: 'GIT_USER', passwordVariable: 'GIT_PASS')]) {
                     sh """
                         git config user.email "vinh.thanhdemon@gmail.com"
-                        git config user.name "Richard CI"
+                        git config user.name "Richard CD"
                         git add .
                         if git diff --cached --quiet; then
                             echo "No changes to commit"
