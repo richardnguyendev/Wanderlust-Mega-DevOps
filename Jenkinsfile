@@ -17,7 +17,7 @@ def owasp_dependency() {
             -v $PWD:$PWD \
             -w $PWD \
             owasp/dependency-check \
-            --scan Wanderlust-Mega-Project/package-lock.json \
+            --scan package-lock.json \
             --format XML \
             --failOnCVSS 10 \
             --project "wanderlust-ci" \
