@@ -10,7 +10,7 @@ def owasp_dependency() {
     echo "🔒 OWASP Dependency check running..."
     sh '''
         docker volume inspect dependency-data >/dev/null 2>&1 || docker volume create dependency-data
-        mkdir -p owasp-output
+        mkdir -p Wanderlust-Mega-Project/owasp-output
 
         docker run --rm \
             -v dependency-data:/usr/share/dependency-check/data \
