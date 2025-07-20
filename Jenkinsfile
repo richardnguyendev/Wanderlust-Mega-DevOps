@@ -166,8 +166,8 @@ pipeline {
                 withCredentials([usernamePassword(credentialsId: 'dockerhub', usernameVariable: 'USER', passwordVariable: 'PASS')]) {
                     sh '''
                         echo "$PASS" | docker login -u "$USER" --password-stdin
-                        docker push richarddevops/wanderlust-backend-beta:${BACKEND_DOCKER_TAG}
-                        docker push richarddevops/wanderlust-frontend-beta:${FRONTEND_DOCKER_TAG}
+                        docker push richarnguyen/wanderlust-backend-beta:${BACKEND_DOCKER_TAG}
+                        docker push richarnguyen/wanderlust-frontend-beta:${FRONTEND_DOCKER_TAG}
                     '''
                 }
             }
