@@ -9,12 +9,10 @@ COPY . .
 
 # packages install
 RUN npm i
+RUN chmod +x node_modules/.bin/jest
 
 # tests
 RUN npm run test
-
-# Fix quyền thực thi jest
-RUN chmod +x ./node_modules/.bin/jest
 
 # Stage 2
 FROM node:21-slim
