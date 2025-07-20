@@ -6,19 +6,22 @@ def trivy_scan() {
     sh 'trivy fs . || true'
 }
 
+
 def owasp_dependency() {
-    def projectDir = pwd()
-
     echo "🔒 OWASP Dependency check running..."
-
-    sh """
+    sh '''
+        # Tạo volume nếu chưa có
         docker volume inspect dependency-data >/dev/null 2>&1 || docker volume create dependency-data
-        mkdir -p ${projectDir}/owasp-output
 
+        # Tạo thư mục output và phân quyền
+        mkdir -p owasp-output
+        chmod -R 777 owasp-output
+
+        # Chạy Docker OWASP Dependency Check
         docker run --rm \
             -v dependency-data:/usr/share/dependency-check/data \
-            -v ${projectDir}:${projectDir} \
-            -w ${projectDir} \
+            -v $PWD:$PWD \
+            -w $PWD \
             owasp/dependency-check \
             --scan package-lock.json \
             --format XML \
@@ -26,33 +29,11 @@ def owasp_dependency() {
             --project "wanderlust-ci" \
             --out owasp-output \
             --log owasp-output/debug.log || echo "⚠️ Dependency Check completed with warnings"
+    '''
 
-        sudo chown -R jenkins:jenkins ${projectDir}/owasp-output
-        ls -lh ${projectDir}/owasp-output
-    """
+    // Kiểm tra kết quả
+    sh 'ls -lh owasp-output || echo "❌ Không tìm thấy thư mục kết quả"'
 }
-
-
-// def owasp_dependency() {
-//     echo "🔒 OWASP Dependency check running..."
-//     sh '''
-//         docker volume inspect dependency-data >/dev/null 2>&1 || docker volume create dependency-data
-//         mkdir -p owasp-output
-
-//         docker run --rm \
-//             -v dependency-data:/usr/share/dependency-check/data \
-//             -v $PWD:$PWD \
-//             -w $PWD \
-//             owasp/dependency-check \
-//             --scan package-lock.json \
-//             --format XML \
-//             --failOnCVSS 10 \
-//             --project "wanderlust-ci" \
-//             --out owasp-output \
-//             --nvdApiKey 2d64934e-4e2c-4739-976b-41fb10d022f2 \
-//             --log owasp-output/debug.log || echo "⚠️ Dependency Check completed with warnings"
-//     '''
-// }
 
 def sonarqube_analysis(toolName, projectKey, projectName) {
     withSonarQubeEnv("${toolName}") {
