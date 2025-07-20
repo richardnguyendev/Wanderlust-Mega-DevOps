@@ -21,7 +21,7 @@ def owasp_dependency() {
             --format XML \
             --failOnCVSS 10 \
             --project "wanderlust-ci" \
-            --out owasp-output \
+            --out $PWD/owasp-output \
             --nvdApiKey 2d64934e-4e2c-4739-976b-41fb10d022f2 \
             --log owasp-output/debug.log || echo "⚠️ Dependency Check completed with warnings"
     '''
