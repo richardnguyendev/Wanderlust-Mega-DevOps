@@ -53,7 +53,7 @@ pipeline {
                             echo "No changes to commit"
                         else
                             git commit -m "Updated Kubernetes manifests with new docker tags"
-                            git push https://richardnguyendev:${GIT_TOKEN}@github.com/richardnguyendev/Wanderlust-Mega-DevOps.git ${env.GIT_BRANCH}
+                            git push https://richardnguyendev:$GIT_TOKEN@github.com/richardnguyendev/Wanderlust-Mega-DevOps.git ${env.GIT_BRANCH}
                         fi
                     '''
                 }
