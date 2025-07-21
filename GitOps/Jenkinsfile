@@ -44,18 +44,18 @@ pipeline {
 
         stage("Git: Commit & Push Updated YAMLs") {
             steps {
-                withCredentials([string(credentialsId: 'dockerhub', variable: 'GITHUB_TOKEN')]) {
-                    sh """
+                withCredentials([usernamePassword(credentialsId: 'dockerhub', usernameVariable: 'GIT_USER', passwordVariable: 'GIT_PASS')]) {
+                    sh '''
                         git config user.email "vinh.thanhdemon@gmail.com"
                         git config user.name "Richard CD"
                         git add .
                         if git diff --cached --quiet; then
-                            echo "No changes to commit"
+                            echo "✅ No changes to commit"
                         else
-                            git commit -m "Updated Kubernetes manifests with new docker tags"
-                            git push https://richardnguyendev:${GIT_TOKEN}@github.com/richardnguyendev/Wanderlust-Mega-DevOps.git ${env.GIT_BRANCH}
+                            git commit -m "🚀 [CD] Update Kubernetes manifests with new docker tags"
+                            git push https://$GIT_USER:$GIT_PASS@github.com/richardnguyendev/Wanderlust-Mega-DevOps.git $(git rev-parse --abbrev-ref HEAD)
                         fi
-                    """
+                    '''
                 }
             }
         }
