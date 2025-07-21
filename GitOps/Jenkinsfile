@@ -44,7 +44,7 @@ pipeline {
 
         stage("Git: Commit & Push Updated YAMLs") {
             steps {
-                withCredentials([usernamePassword(credentialsId: 'dockerhub', usernameVariable: 'GIT_USER', passwordVariable: 'GIT_PASS')]) {
+                withCredentials([usernamePassword(credentialsId: 'dockerhub', usernameVariable: 'GIT_USER', passwordVariable: 'GIT_TOKEN')]) {
                     sh """
                         git config user.email "vinh.thanhdemon@gmail.com"
                         git config user.name "Richard CD"
@@ -53,7 +53,7 @@ pipeline {
                             echo "No changes to commit"
                         else
                             git commit -m "Updated Kubernetes manifests with new docker tags"
-                            git push https://${GIT_USER}:${GIT_PASS}@github.com/richardnguyendev/Wanderlust-Mega-DevOps.git ${env.GIT_BRANCH}
+                            git push https://${GIT_USER}:${GIT_TOKEN}@github.com/richardnguyendev/Wanderlust-Mega-DevOps.git ${env.GIT_BRANCH}
                         fi
                     """
                 }
