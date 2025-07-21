@@ -44,7 +44,7 @@ pipeline {
 
         stage("Git: Commit & Push Updated YAMLs") {
             steps {
-                withCredentials([string(credentialsId: 'sonarqube-token', variable: 'GITHUB_TOKEN')]) {
+                withCredentials([string(credentialsId: 'sonarqube-token', variable: 'GIT_TOKEN')]) {
                     sh """
                         git config user.email "vinh.thanhdemon@gmail.com"
                         git config user.name "Richard CD"
