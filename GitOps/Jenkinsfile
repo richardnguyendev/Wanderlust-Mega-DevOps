@@ -44,16 +44,16 @@ pipeline {
 
         stage("Git: Commit & Push Updated YAMLs") {
             steps {
-                withCredentials([string(credentialsId: 'sonarqube-token', variable: 'GIT_TOKEN')]) {
+                withCredentials([usernamePassword(credentialsId: 'github-pat', usernameVariable: 'GIT_USER', passwordVariable: 'GIT_TOKEN')]) {
                     sh '''#!/bin/bash
                         git config user.email "vinh.thanhdemon@gmail.com"
                         git config user.name "Richard CD"
                         git add .
                         if git diff --cached --quiet; then
-                            echo "No changes to commit"
+                            echo "✅ No changes to commit"
                         else
                             git commit -m "Updated Kubernetes manifests with new docker tags"
-                            git push https://richardnguyendev:${GIT_TOKEN}@github.com/richardnguyendev/Wanderlust-Mega-DevOps.git $(git rev-parse --abbrev-ref HEAD)
+                            git push https://$GIT_USER:$GIT_TOKEN@github.com/richardnguyendev/Wanderlust-Mega-DevOps.git $(git rev-parse --abbrev-ref HEAD)
                         fi
                     '''
                 }
