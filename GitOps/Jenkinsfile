@@ -45,7 +45,7 @@ pipeline {
         stage("Git: Commit & Push Updated YAMLs") {
             steps {
                 withCredentials([string(credentialsId: 'sonarqube-token', variable: 'GIT_TOKEN')]) {
-                    sh """
+                    sh '''#!/bin/bash
                         git config user.email "vinh.thanhdemon@gmail.com"
                         git config user.name "Richard CD"
                         git add .
@@ -55,7 +55,7 @@ pipeline {
                             git commit -m "Updated Kubernetes manifests with new docker tags"
                             git push https://richardnguyendev:${GIT_TOKEN}@github.com/richardnguyendev/Wanderlust-Mega-DevOps.git ${env.GIT_BRANCH}
                         fi
-                    """
+                    '''
                 }
             }
         }
