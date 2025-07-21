@@ -44,7 +44,7 @@ pipeline {
 
         stage("Git: Commit & Push Updated YAMLs") {
             steps {
-                withCredentials([string(credentialsId: 'github-pat', variable: 'GITHUB_TOKEN')]) {
+                withCredentials([string(credentialsId: 'dockerhub', variable: 'GITHUB_TOKEN')]) {
                     sh """
                         git config user.email "vinh.thanhdemon@gmail.com"
                         git config user.name "Richard CD"
