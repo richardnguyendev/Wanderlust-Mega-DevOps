@@ -26,8 +26,9 @@ spec:
               mountPath: /data
       volumes:
         - name: redis-storage
-          persistentVolumeClaim:
-            claimName: redis-pvc
+          emptyDir: {}
+          # persistentVolumeClaim:
+          #   claimName: redis-p
 ---
 apiVersion: v1
 kind: Service
