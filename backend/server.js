@@ -17,7 +17,8 @@ app.use(express.urlencoded({ extended: true }));
 app.use(cors({
   origin: [
       'https://wanderlust-mega-dev-ops.vercel.app',
-      'http://35.247.142.83:5173'
+      'http://35.247.142.83:5173',
+      'http://35.223.171.95:31000'
     ], 
   credentials: true, // nếu dùng cookie
 }));
