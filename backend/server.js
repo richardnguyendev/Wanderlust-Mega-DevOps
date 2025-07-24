@@ -14,14 +14,29 @@ const port = process.env.PORT || 5000;
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 // app.use(cors());
+const allowedOrigins = [
+  'https://wanderlust-mega-dev-ops.vercel.app',
+  'http://35.223.171.95:31000',
+];
+
 app.use(cors({
-  origin: [
-      'https://wanderlust-mega-dev-ops.vercel.app',
-      'http://35.247.142.83:5173',
-      'http://35.223.171.95:31000'
-    ], 
-  credentials: true, // nếu dùng cookie
+  origin: function (origin, callback) {
+    if (!origin || allowedOrigins.includes(origin)) {
+      callback(null, true);
+    } else {
+      callback(new Error('Not allowed by CORS'));
+    }
+  },
+  credentials: true,
 }));
+// app.use(cors({
+//   origin: [
+//       'https://wanderlust-mega-dev-ops.vercel.app',
+//       'http://35.247.142.83:5173',
+//       'http://35.223.171.95:31000'
+//     ], 
+//   credentials: true, // nếu dùng cookie
+// }));
 app.use(cookieParser());
 app.use(compression());
 
