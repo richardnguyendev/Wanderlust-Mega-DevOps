@@ -383,7 +383,7 @@ kubectl get secret --namespace prometheus stable-grafana -o jsonpath="{.data.adm
 ## Clean Up
 - <b id="Clean">Delete GKS cluster</b>
 ```bash
-gcloud container clusters delete wanderlust-cluster --zone=asia-southeast1-a
+gcloud container clusters delete wanderlust-cluster --zone=us-central1
 ```
 
 #
